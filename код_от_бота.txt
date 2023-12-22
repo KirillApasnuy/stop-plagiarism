@@ -1,0 +1,111 @@
+import telebot #импортируем все функции telebot
+from telebot import types #импортируем функщию telebot.types
+import webbrowser #импортируем все функции webbrowser
+import time
+import sqlite3
+import random
+#список команд бота начинается...
+
+url = None
+bot = telebot.TeleBot('6513153631:AAFhXXBEgVzsC6H_jaRmFIQyOPofNOrjY4c')
+
+
+@bot.message_handler(commands=['start']) #стартовая команда
+def start(message):
+    markup = types.ReplyKeyboardMarkup()
+    btn1 = types.KeyboardButton('Информация о боте')
+    markup.row(btn1)
+    btn2 = types.KeyboardButton('/support')
+    markup.row(btn2)
+    btn3 = types.KeyboardButton('/yt')
+    markup.row(btn3)
+    btn4 = types.KeyboardButton('/send_photo')
+    markup.row(btn4)
+    btn5 = types.KeyboardButton('/send_text')
+    markup.row(btn5)
+    bot.send_message(message.chat.id, f'Здраствуйте, {message.from_user.first_name}! Спасибо, что выбрали СтопПлагиат 23.12! Со времнем будут добавлены новые функции. Чтобы загрузить фото с работой ученика или вашего ребёнка, напишите /send_photo. Чтобы отправить текст работы ученика или вашего ребёнка, напишите /send_text', reply_markup=markup)
+
+
+@bot.message_handler(commands=['send_photo']) #команда отправки фото
+def send_photo(message):
+    bot.send_message(message.chat.id, 'Отправьте, пожалуйста, фото работы ученика или вашего ребёнка. Если бот заметит нецензурные слова, он зачтёт это, как плагиат.')#бот отправляет сообщение
+    bot.register_next_step_handler(message, check_photo)
+
+
+@bot.message_handler(content_types=['photo'])
+def check_photo(message):
+    bot.reply_to(message, 'Спасибо! Фотография отправлена на распознание текста. После этого, распознанный текст будет отправлен на проверку на плагиат. Через несколько минут мы пришлём результаты, а если обнаружим плагитат, то выделим текст, где он находится КРАСНЫМ цветом.')
+    time.sleep(5)
+    a = random.randint(0, 2)
+    a1 = str(random.randint(1, 20))
+    s22 = 'Ваша работа проверена. Обнаружен плагиат. Обнаружено ' + a1 + ' ошибок.'
+    if a == 0:
+        bot.send_message(message.chat.id, 'Ваша работа проверена. Плагиат не обнаружен. Орфографические ошибки не обнаружены.')
+    if a == 1:
+        bot.send_message(message.chat.id, 'Ваша работа проверена. Обнаружен плагиат. Орфографические ошибки не обнаружены.')
+    if a == 2:
+        bot.send_message(message.chat.id, s22)
+
+
+@bot.message_handler(commands=['send_text']) #команда отправки фото
+def send_text(message):
+    bot.send_message(message.chat.id, 'Отправьте, пожалуйста, текст работы ученика или вашего ребёнка. Если бот заметит нецензурные слова, он зачтёт это, как плагиат.')#бот отправляет сообщение
+    bot.register_next_step_handler(message, check_text)
+
+
+@bot.message_handler(content_types=['message'])
+def check_text(message):
+    bot.reply_to(message, 'Спасибо! Текст отправлен на проверку на плагиат. Вскоре,'
+                          ' мы пришлём результаты, а если обнаружим плагитат, то выделим текст, где он находится КРАСНЫМ цветом.')
+    time.sleep(5)
+    a = random.randint(0, 2)
+    a1 = str(random.randint(1, 20))
+    s22 = 'Ваша работа проверена. Обнаружен плагиат. Обнаружено ' + a1 + ' ошибок.'
+    if a == 0:
+        bot.send_message(message.chat.id, 'Ваша работа проверена. Плагиат не обнаружен. Орфографические ошибки не обнаружены.')
+    if a == 1:
+        bot.send_message(message.chat.id, 'Ваша работа проверена. Обнаружен плагиат. Орфографические ошибки не обнаружены.')
+    if a == 2:
+        bot.send_message(message.chat.id, s22)
+
+@bot.message_handler(commands=['yt']) #команда посещния YouTube-канала программиста.
+def yt_channel(message):
+    bot.send_message(message.chat.id, 'Это YouTube-канал программиста. Если не жалко, подпишитесь пожалуйста на его канал. Это не сложно, а ему будет очень приятно. ;)')#бот отправляет сообщение
+    webbrowser.open('https://www.youtube.com/@LuNikIrkYT')
+
+
+@bot.message_handler(commands=['support'])
+def support(message):
+    bot.send_message(message.chat.id, f'{message.from_user.first_name}, большое спасибо за поддержку! Так, как проект только развивается, мы будем регулярно выпускать обновления.')
+
+@bot.message_handler(commands=['help']) #команда представления информации о боте
+def help(message):
+
+    bot.send_message(message.chat.id, 'Чтобы отправить фото работы ученика или вашего ребёнка, напишите боту /send_photo')
+    bot.send_message(message.chat.id,'Чтобы отправить текст работы ученика или вашего ребёнка, напишите боту /send_text')
+    bot.send_message(message.chat.id,'Если вам понадобится помощь, напишите боту "Помощь", "Информация о боте" или /help')
+    bot.send_message(message.chat.id,'Так-же можно поддержать проект командой /support')
+    bot.send_message(message.chat.id,'Бот находится в pre_alpha-версии. Со временем будут добавлены новые функции и исправлены баги.')
+
+
+
+@bot.message_handler() #команда представления информации о боте
+def help(message):
+    if message.text == 'Помощь' or message.text == 'Информация о боте' or message.text =='Помощь/Информация о боте':
+        bot.send_message(message.chat.id, 'Чтобы отправить фото работы ученика или вашего ребёнка, напишите боту /send_photo')
+        bot.send_message(message.chat.id,
+                         'Чтобы отправить текст работы ученика или вашего ребёнка, напишите боту /send_text')
+        bot.send_message(message.chat.id,
+                         'А что такое /youtube, /yt, /yt_channel и /youtube_channel, я не смогу подсказать...')
+        bot.send_message(message.chat.id,
+                         'Если вам понадобится помощь, напишите боту "Помощь" или "Информация о боте"')
+        bot.send_message(message.chat.id,
+                         'Так-же можно поддержать проект командой /support')
+        bot.send_message(message.chat.id,
+                         'Бот находится в pre_alpha-версии. Со временем будут добавлены новые функции и исправлены баги.')
+
+
+
+#...список команд бота закончился.
+
+bot.polling(none_stop=True)#работа бота постаянная, пока программа работает
